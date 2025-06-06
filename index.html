@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional online advisory services for businesses and individuals">
+    <title>Online Advisory Services | Expert Consulting</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            scroll-behavior: smooth;
+        }
+        .scroll-btn {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 99;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .scroll-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .scroll-up {
+            right: 20px;
+            bottom: 80px;
+            background: #2563eb;
+            color: white;
+        }
+        .scroll-down {
+            right: 20px;
+            bottom: 20px;
+            background: #1e40af;
+            color: white;
+        }
+        @media (max-width: 768px) {
+            .scroll-btn {
+                width: 45px;
+                height: 45px;
+            }
+            .scroll-up {
+                right: 15px;
+                bottom: 70px;
+            }
+            .scroll-down {
+                right: 15px;
+                bottom: 15px;
+            }
+        }
+        .contact-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="text-xl font-bold text-gray-800">Advisory Services</div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex space-x-4">
+                        <a href="#services" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                        <a href="#testimonials" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Testimonials</a>
+                        <a href="#contact" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+                <div class="flex items-center md:hidden">
+                    <button id="menu-toggle" class="text-gray-600 hover:text-gray-900 focus:outline-none" aria-label="Toggle menu">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#services" class="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="#testimonials" class="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Testimonials</a>
+                <a href="#contact" class="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Scroll Buttons -->
+    <button id="scrollUp" class="scroll-btn scroll-up hidden" aria-label="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+        </svg>
+    </button>
+    <button id="scrollDown" class="scroll-btn scroll-down hidden" aria-label="Scroll to bottom">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+
+    <!-- Hero Section -->
+    <header class="bg-blue-600 text-white h-screen flex items-center justify-center pt-16">
+        <div class="text-center px-4">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">Online Advisory Services</h1>
+            <p class="text-lg md:text-xl mb-8 max-w-2xl mx-auto">Expert advice at your fingertips. We provide professional consulting services to help your business grow.</p>
+            <a href="home.html" class="bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition duration-300 inline-block">Get Started</a>
+        </div>
+    </header>
+
+    <!-- Services Section -->
+    <section id="services" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Our Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                    <h3 class="text-xl font-semibold mb-4">Business Consulting</h3>
+                    <p class="text-gray-600">Expert advice tailored to your specific business needs and challenges.</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                    <h3 class="text-xl font-semibold mb-4">Strategic Planning</h3>
+                    <p class="text-gray-600">Comprehensive strategic planning for sustainable business growth.</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                    <h3 class="text-xl font-semibold mb-4">Ongoing Support</h3>
+                    <p class="text-gray-600">Dedicated support to ensure your continued success and adaptation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Client Testimonials</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                    <p class="text-gray-600 mb-4 italic">"The advisory services were exceptional! They helped us navigate through tough decisions with clear, actionable advice."</p>
+                    <p class="font-semibold">— Ebalu, CEO</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                    <p class="text-gray-600 mb-4 italic">"Their expertise made a significant difference in our project outcomes. Highly professional and knowledgeable."</p>
+                    <p class="font-semibold">— Blessing I, Director</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                    <p class="text-gray-600 mb-4 italic">"We've seen measurable growth since implementing their recommendations. Truly valuable partnership."</p>
+                    <p class="font-semibold">— Ebalu Ibhafidon, Founder</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Get In Touch</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Contact Information Cards -->
+                <div class="space-y-8">
+                    <div class="contact-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-semibold mb-6 text-center">Contact Information</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                    <i class="fas fa-map-marker-alt text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">Address</h4>
+                                    <p class="text-gray-600">243 Business Street, Suite 7<br>FCT Abuja, Abj 100001</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                    <i class="fas fa-phone-alt text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">Phone</h4>
+                                    <p class="text-gray-600">+234 (803) 452-2004</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                    <i class="fas fa-envelope text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">Email</h4>
+                                    <p class="text-gray-600">ebaluandy@gmail.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                    <i class="fas fa-clock text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-700">Business Hours</h4>
+                                    <p class="text-gray-600">Monday - Friday: 9am - 6pm<br>Saturday: 10am - 2pm<br>Sunday: Closed</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 flex justify-center space-x-4">
+                            <a href="#" class="bg-blue-100 text-blue-600 p-3 rounded-full hover:bg-blue-200 transition duration-300">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="bg-blue-100 text-blue-600 p-3 rounded-full hover:bg-blue-200 transition duration-300">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="bg-blue-100 text-blue-600 p-3 rounded-full hover:bg-blue-200 transition duration-300">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="bg-blue-100 text-blue-600 p-3 rounded-full hover:bg-blue-200 transition duration-300">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-semibold mb-6 text-center">Location</h3>
+                        <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+                            <!-- Embedded Google Map (replace with your actual embed code) -->
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215573291234!2d-73.98784492406908!3d40.7484409713899!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1629997981729!5m2!1sen!2sus" 
+                                    width="100%" 
+                                    height="300" 
+                                    style="border:0;" 
+                                    allowfullscreen="" 
+                                    loading="lazy">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Form -->
+                <div class="contact-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-semibold mb-6 text-center">Send Us a Message</h3>
+                    <form class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-gray-700 mb-2 font-medium">Full Name</label>
+                            <input type="text" id="name" name="name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="email" class="block text-gray-700 mb-2 font-medium">Email Address</label>
+                                <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-gray-700 mb-2 font-medium">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="subject" class="block text-gray-700 mb-2 font-medium">Subject</label>
+                            <select id="subject" name="subject" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Select a subject</option>
+                                <option value="consulting">Consulting Services</option>
+                                <option value="support">Customer Support</option>
+                                <option value="partnership">Partnership Inquiry</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="message" class="block text-gray-700 mb-2 font-medium">Your Message</label>
+                            <textarea id="message" name="message" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    &copy; <span id="year">2025</span> Advisory Services. All rights reserved.
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-blue-300 transition duration-300">Privacy Policy</a>
+                    <a href="#" class="hover:text-blue-300 transition duration-300">Terms of Service</a>
+                    <a href="#contact" class="hover:text-blue-300 transition duration-300">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function() {
+            // Mobile menu toggle
+            $('#menu-toggle').click(function() {
+                $('#mobile-menu').toggleClass('hidden');
+            });
+            
+            // Smooth scrolling for navigation links
+            $('a[href^="#"]').on('click', function(event) {
+                event.preventDefault();
+                var target = $(this.getAttribute('href'));
+                if (target.length) {
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top
+                    }, 800);
+                }
+            });
+            
+            // Update copyright year
+            $('#year').text(new Date().getFullYear());
+            
+            // Scroll buttons functionality
+            const scrollUpBtn = $('#scrollUp');
+            const scrollDownBtn = $('#scrollDown');
+            
+            // Show/hide scroll buttons based on scroll position
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 300) {
+                    scrollUpBtn.removeClass('hidden');
+                } else {
+                    scrollUpBtn.addClass('hidden');
+                }
+                
+                // Show down button only if not near bottom
+                if ($(window).scrollTop() + $(window).height() < $(document).height() - 100) {
+                    scrollDownBtn.removeClass('hidden');
+                } else {
+                    scrollDownBtn.addClass('hidden');
+                }
+            });
+            
+            // Scroll to top
+            scrollUpBtn.click(function() {
+                $('html, body').animate({ scrollTop: 0 }, 800);
+                return false;
+            });
+            
+            // Scroll to bottom
+            scrollDownBtn.click(function() {
+                $('html, body').animate({ scrollTop: $(document).height() }, 800);
+                return false;
+            });
+            
+            // Initially show down button if not at bottom
+            if ($(window).scrollTop() + $(window).height() < $(document).height() - 100) {
+                scrollDownBtn.removeClass('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
