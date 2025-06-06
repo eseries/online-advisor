@@ -1,0 +1,40 @@
+const Groq = require("groq-sdk");
+
+const groq = new Groq({
+    apiKey: "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"
+});
+
+async function main() {
+  try {
+    const prompt = `Write me a joke about a cat eating pizza. Return response in the following parsable JSON format ONLY:
+    
+    {
+      "Q": "question",
+      "A": "answer"
+    }
+
+    Return ONLY the JSON with no additional text, commentary, or markdown syntax.`;
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama3-70b-8192",
+      response_format: { type: "json_object" }  // This enforces JSON output
+    });
+
+    const response = chatCompletion.choices[0]?.message?.content;
+    
+    // Clean the response in case there's any surrounding text
+    const jsonMatch = response.match(/\{[\s\S]*\}/);
+    const jsonString = jsonMatch ? jsonMatch[0] : response;
+    
+    const parsedResponse = JSON.parse(jsonString);
+
+    console.log("Question:", parsedResponse.Q);
+    console.log("Answer:", parsedResponse.A);
+  } catch (error) {
+    console.error("Error:", error);
+    console.log("Raw response that failed to parse:", chatCompletion?.choices[0]?.message?.content);
+  }
+}
+
+main();

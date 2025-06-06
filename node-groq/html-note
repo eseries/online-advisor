@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Advisor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #conversation {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background-color: white;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .user-message {
+            background-color: #e3f2fd;
+            margin-left: 20%;
+            border-left: 3px solid #2196F3;
+        }
+        .bot-message {
+            background-color: #f1f8e9;
+            margin-right: 20%;
+            border-left: 3px solid #4CAF50;
+        }
+        .message-time {
+            font-size: 0.8em;
+            color: #666;
+            text-align: right;
+            margin-top: 5px;
+        }
+        #prompt-form {
+            margin-top: 20px;
+        }
+        .clear-btn {
+            background-color: #f44336;
+        }
+        .clear-btn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Online Advisor</h1>
+        <p>How can I help you today?</p>
+        
+        <div id="conversation">
+            <!-- Conversation history will appear here -->
+        </div>
+        
+        <form id="prompt-form">
+            <textarea id="prompt" placeholder="Type your question here..."></textarea>
+            <div>
+                <button type="submit">Send</button>
+                <button type="button" class="clear-btn" id="clear-conversation">Clear History</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Load conversation history from localStorage if available
+        let conversation = JSON.parse(localStorage.getItem('advisorConversation')) || [];
+        
+        // Display existing conversation
+        function displayConversation() {
+            const conversationDiv = document.getElementById('conversation');
+            conversationDiv.innerHTML = '';
+            
+            if (conversation.length === 0) {
+                conversationDiv.innerHTML = '<p>No conversation history yet. Ask me anything!</p>';
+                return;
+            }
+            
+            conversation.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.role}-message`;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.textContent = msg.content;
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'message-time';
+                timeDiv.textContent = new Date(msg.timestamp).toLocaleTimeString();
+                
+                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(timeDiv);
+                conversationDiv.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            conversationDiv.scrollTop = conversationDiv.scrollHeight;
+        }
+        
+        // Initialize conversation display
+        displayConversation();
+        
+        // Handle form submission
+        document.getElementById('prompt-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const promptInput = document.getElementById('prompt');
+            const prompt = promptInput.value.trim();
+            
+            if (!prompt) return;
+            
+            // Add user message to conversation
+            const userMessage = {
+                role: 'user',
+                content: prompt,
+                timestamp: new Date().toISOString()
+            };
+            conversation.push(userMessage);
+            localStorage.setItem('advisorConversation', JSON.stringify(conversation));
+            displayConversation();
+            
+            // Clear input
+            promptInput.value = '';
+            
+            try {
+                const response = await fetch('/get-response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Add bot response to conversation
+                    const botMessage = {
+                        role: 'bot',
+                        content: data.response,
+                        timestamp: new Date().toISOString()
+                    };
+                    conversation.push(botMessage);
+                    localStorage.setItem('advisorConversation', JSON.stringify(conversation));
+                    displayConversation();
+                } else {
+                    throw new Error(data.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                // Add error message to conversation
+                const errorMessage = {
+                    role: 'bot',
+                    content: 'Sorry, I encountered an error: ' + error.message,
+                    timestamp: new Date().toISOString()
+                };
+                conversation.push(errorMessage);
+                localStorage.setItem('advisorConversation', JSON.stringify(conversation));
+                displayConversation();
+            }
+        });
+        
+        // Clear conversation history
+        document.getElementById('clear-conversation').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear the conversation history?')) {
+                conversation = [];
+                localStorage.removeItem('advisorConversation');
+                displayConversation();
+            }
+        });
+
+        
+    </script>
+</body>
+</html>

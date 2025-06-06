@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Advisor</title>
+    <!-- Tailwind CSS via CDN (for development) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Animation for new messages */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-8 flex-1 flex flex-col max-w-4xl">
+        <!-- Header -->
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Online Advisor</h1>
+            <p class="text-gray-600">Real-time Adviser-powered Online Advisor</p>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="flex-1 flex flex-col bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Messages area -->
+            <div id="chat-container" class="chat-container flex-1 p-4 overflow-y-auto space-y-4">
+                <div id="connection-status" class="text-center text-gray-500 text-sm py-2">
+                    Connecting to server...
+                </div>
+            </div>
+
+            <!-- Input area -->
+            <div class="border-t border-gray-200 p-4 bg-gray-50">
+                <div class="flex space-x-2">
+                    <input 
+                        id="message-input" 
+                        type="text" 
+                        placeholder="Type your message..." 
+                        class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        autocomplete="off"
+                    >
+                    <button 
+                        id="send-button" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+                    >
+                        Send
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">
+                    Press Enter to send, Shift+Enter for new line
+                </p>
+            </div>
+        </div>
+
+        <!-- Connection info -->
+        <footer class="mt-4 text-center text-sm text-gray-500">
+            <p id="connection-info">WebSocket: Connecting...</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatContainer = document.getElementById('chat-container');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const connectionStatus = document.getElementById('connection-status');
+            const connectionInfo = document.getElementById('connection-info');
+            
+            // Establish WebSocket connection
+            const socketProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const socketUrl = `${socketProtocol}//${window.location.host}`;
+            const socket = new WebSocket(socketUrl);
+            
+            // Connection opened
+            socket.addEventListener('open', (event) => {
+                connectionStatus.textContent = 'Connected to server';
+                connectionStatus.className = 'text-center text-green-500 text-sm py-2';
+                connectionInfo.textContent = 'Online Advisor: Connected ✅';
+                connectionInfo.className = 'mt-4 text-center text-sm text-green-500';
+            });
+            
+            // Listen for messages
+            socket.addEventListener('message', (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'response') {
+                        addBotMessage(data.content);
+                    } else if (data.type === 'error') {
+                        addErrorMessage(data.content);
+                    }
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                    addErrorMessage('Failed to parse server response');
+                }
+            });
+            
+            // Connection closed
+            socket.addEventListener('close', (event) => {
+                connectionStatus.textContent = 'Disconnected from server';
+                connectionStatus.className = 'text-center text-red-500 text-sm py-2';
+                connectionInfo.textContent = 'WebSocket: Disconnected ❌';
+                connectionInfo.className = 'mt-4 text-center text-sm text-red-500';
+                
+                // Try to reconnect after 5 seconds
+                setTimeout(() => {
+                    connectionStatus.textContent = 'Attempting to reconnect...';
+                    window.location.reload();
+                }, 5000);
+            });
+            
+            // Connection error
+            socket.addEventListener('error', (event) => {
+                connectionStatus.textContent = 'Connection error';
+                connectionStatus.className = 'text-center text-red-500 text-sm py-2';
+                connectionInfo.textContent = 'WebSocket: Error ❌';
+                connectionInfo.className = 'mt-4 text-center text-sm text-red-500';
+            });
+            
+            // Handle send button click
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Handle Enter key in input
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Enable/disable send button based on input
+            messageInput.addEventListener('input', () => {
+                sendButton.disabled = messageInput.value.trim() === '';
+            });
+            
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message && socket.readyState === WebSocket.OPEN) {
+                    addUserMessage(message);
+                    socket.send(JSON.stringify({
+                        type: 'prompt',
+                        prompt: message
+                    }));
+                    messageInput.value = '';
+                    sendButton.disabled = true;
+                    
+                    // Add typing indicator
+                    const typingIndicator = document.createElement('div');
+                    typingIndicator.id = 'typing-indicator';
+                    typingIndicator.className = 'flex space-x-2 p-3';
+                    typingIndicator.innerHTML = `
+                        <div class="typing-dot bg-gray-300 h-2 w-2 rounded-full animate-bounce"></div>
+                        <div class="typing-dot bg-gray-300 h-2 w-2 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="typing-dot bg-gray-300 h-2 w-2 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    `;
+                    chatContainer.appendChild(typingIndicator);
+                    scrollToBottom();
+                }
+            }
+            
+            function addUserMessage(text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message flex justify-end';
+                messageDiv.innerHTML = `
+                    <div class="max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl bg-blue-600 text-white rounded-lg p-3 shadow">
+                        ${escapeHtml(text).replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                chatContainer.appendChild(messageDiv);
+                scrollToBottom();
+            }
+            
+            function addBotMessage(text) {
+                // Remove typing indicator if present
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message flex justify-start';
+                messageDiv.innerHTML = `
+                    <div class="max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl bg-gray-200 text-gray-800 rounded-lg p-3 shadow">
+                        ${escapeHtml(text).replace(/\n/g, '<br>')}
+                    </div>
+                `;
+                chatContainer.appendChild(messageDiv);
+                scrollToBottom();
+            }
+            
+            function addErrorMessage(text) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message text-center';
+                errorDiv.innerHTML = `
+                    <div class="inline-block bg-red-100 text-red-800 rounded-lg px-4 py-2 text-sm">
+                        ${escapeHtml(text)}
+                    </div>
+                `;
+                chatContainer.appendChild(errorDiv);
+                scrollToBottom();
+            }
+            
+            function scrollToBottom() {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+        });
+    </script>
+</body>
+</html>
